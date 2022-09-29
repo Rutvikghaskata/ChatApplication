@@ -4,15 +4,17 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert
 } from 'react-native';
 import React, {useState} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import * as Animatable from 'react-native-animatable';
 import Button from '../../component/Button';
 import axios from 'axios';
-const api = `http://192.168.1.147:5000`;
+import AsyncStorage from '@react-native-async-storage/async-storage';
+const api = `http://192.168.1.67:5000`;
 
-const Login = ({navigation}) => {
+const Register = ({navigation}) => {
   const [name, setName] = useState('');
   const [nameError, setNameError] = useState('');
   const [email, setEmail] = useState('');
@@ -125,15 +127,15 @@ const Login = ({navigation}) => {
               styles.input,
               {
                 borderColor:
-                  focused === 4 ? '#28056a' : confirmPassword ? 'red' : '#eee',
+                  focused === 4 ? '#28056a' : confirmPasswordError ? 'red' : '#eee',
               },
             ]}
             onFocus={() => setFocused(4)}
           />
-          {confirmPassword ? (
+          {confirmPasswordError ? (
             <View style={styles.errorContainer}>
               <Text style={{color: 'white', fontSize: 13}}>
-                {confirmPassword}
+                {confirmPasswordError}
               </Text>
             </View>
           ) : null}
@@ -174,7 +176,7 @@ const Login = ({navigation}) => {
   );
 };
 
-export default Login;
+export default Register;
 
 const styles = StyleSheet.create({
   linearGradient: {

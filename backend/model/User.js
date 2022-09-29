@@ -18,6 +18,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  status:{
+    type: String,
+    default:null
+  },
+  profileImage:{
+    type:String,
+    default:null
+  }
 });
 
 userSchema.methods.comparePassword = function (candidatePassword) {

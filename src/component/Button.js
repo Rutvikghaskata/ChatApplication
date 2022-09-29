@@ -19,7 +19,7 @@ const Button = props => {
 
 const styles = StyleSheet.create({
   button: {
-    height: 55,
+    height: 52,
     width: '100%',
     borderRadius: 10,
     overflow: 'hidden',
