@@ -17,8 +17,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import {ChatData} from '../JsonData/fakeData';
 import * as Animatable from 'react-native-animatable';
 import socketIOClient from 'socket.io-client';
-const Socket_URL = 'http://192.168.1.147:5000';
-const socket = socketIOClient(Socket_URL);
+import axios from 'axios';
+const api = 'http://192.168.1.68:5000';
+const socket = socketIOClient(api);
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -33,21 +34,23 @@ function isValidHttpUrl(s) {
   return /https?/.test(url);
 }
 
-const App = () => {
+const App = ({route}) => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [key, setKey] = useState();
   const [show, setShow] = useState(false);
 
+  const ChatUser = route.params
+  const current = new Date()
   const sendMessage = async() => {
-    setMessage('')
+    
     const data = {
-      UserName: user,
-      Message: message,
-      Time: time,
+      Sender: '633dbeceeeeef682a5f129a1',
+      Receiver: ChatUser._id,
+      Message: 'message',
       Reaction:[{user:'rutvik',react:'like'}]
     };
-    await fetch('http://192.168.1.147:5000/message',{
+    await fetch('http://192.168.1.68:5000/message',{
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -58,8 +61,28 @@ const App = () => {
     socket.emit('message')
   };
 
+  const getMessages = () =>{
+    try {    
+      axios
+        .get(`${api}/getMessages`)
+        .then(res => {
+          console.log(res.data)
+          setMessages(res.data);
+        })
+        .catch(err => {
+          console.log(err.message);
+          Alert.alert(err.message);
+          return err;
+        });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   useEffect(() => {
+    
     try {
+      getMessages()
       socket.connect();
       socket.emit('message')
       socket.on('message', chat => {
@@ -74,7 +97,7 @@ const App = () => {
   }, []);
   
   return (
-    <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    <ScrollView style={{flex:1}} >
       <StatusBar backgroundColor="#28056a" />
       
         <LinearGradient
@@ -100,7 +123,7 @@ const App = () => {
                   fontSize: 17,
                   fontFamily: 'Quicksand-SemiBold',
                 }}>
-                Back
+                {ChatUser.name}
               </Text>
             </TouchableOpacity>
           </View>
@@ -110,7 +133,7 @@ const App = () => {
               showsVerticalScrollIndicator={false}
               
               >
-              {ChatData.map((item, index) => {
+              {messages.map((item, index) => {
                 return (
                   <TouchableOpacity
                     style={{position: 'relative'}}
@@ -123,7 +146,7 @@ const App = () => {
                       style={{
                         flexDirection: item.user === '2' ? 'row' : 'column',
                       }}>
-                      {item.user === '2' && (
+                      {/* {item.user === '2' && (
                         <Image
                           style={{
                             height: 40,
@@ -134,7 +157,7 @@ const App = () => {
                           }}
                           source={{uri: item.profileImage}}
                         />
-                      )}
+                      )} */}
                       <TouchableOpacity
                         activeOpacity={1}
                         onPress={() => setShow(false)}
@@ -156,11 +179,11 @@ const App = () => {
                             borderRadius: 12,
                             maxWidth: windowWidth - 120,
                           }}>
-                          {isValidHttpUrl(item.message) ? (
+                          {isValidHttpUrl(item.Message) ? (
                             <TouchableOpacity
                               activeOpacity={0.8}
                               onPress={() => {
-                                const send = Linking.openURL(item.message);
+                                const send = Linking.openURL(item.Message);
                                 console.log(send);
                               }}>
                               <Text
@@ -176,7 +199,7 @@ const App = () => {
                                   fontSize: 14,
                                   textDecorationLine: 'underline',
                                 }}>
-                                {item.message}
+                                {item.Message}
                               </Text>
                             </TouchableOpacity>
                           ) : (
@@ -190,7 +213,7 @@ const App = () => {
                                 paddingTop: 5,
                                 fontSize: 14,
                               }}>
-                              {item.message}
+                              {item.Message}
                             </Text>
                           )}
                           <Text
@@ -205,7 +228,7 @@ const App = () => {
                             {item.time}
                           </Text>
 
-                          {item.react != null && (
+                          {item.Reaction != null && (
                             <View
                               style={{
                                 position: 'absolute',
@@ -217,7 +240,7 @@ const App = () => {
                                 left: 10,
                                 flexDirection: 'row',
                               }}>
-                              {item.react.map((item, index) => {
+                              {item.Reaction.map((item, index) => {
                                 return (
                                   <Text
                                     key={index}
@@ -226,11 +249,11 @@ const App = () => {
                                       color: '#eee',
                                       marginHorizontal: 5,
                                     }}>
-                                    {item.reaction === 'heart'
+                                    {item.react === 'like'
                                       ? '❤️'
-                                      : item.reaction === 'smile'
+                                      : item.react === 'smile'
                                       ? '😄'
-                                      : item.reaction === 'happy'
+                                      : item.react === 'happy'
                                       ? '😂'
                                       : ''}
                                   </Text>
@@ -322,7 +345,7 @@ const App = () => {
             </View>
           </View>
         </LinearGradient>
-    </KeyboardAvoidingView>
+    </ScrollView>
   );
 };
 
@@ -334,7 +357,7 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   Container: {
-    height: windowHeight - 90,
+    height: windowHeight - 70,
     paddingTop: 20,
     paddingBottom: 10,
     paddingHorizontal: 10,

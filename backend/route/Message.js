@@ -6,11 +6,12 @@ require("../model/Message");
 const Messages = mongoose.model("Messages");
 
 router.post("/message", async (req, res) => {
-  const { SenderName, ReceiverName, Message, Reaction } = req.body;
+  console.log(req.body)
+  const { Sender, Receiver, Message, Reaction } = req.body;
   try {
     const message = new Messages({
-      SenderName,
-      ReceiverName,
+      Sender,
+      Receiver,
       Message,
       Reaction,
     });

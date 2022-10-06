@@ -12,7 +12,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import * as Animatable from 'react-native-animatable';
 import Button from '../../component/Button';
 import axios from 'axios';
-const api = `http://192.168.1.67:5000`;
+const api = `http://192.168.1.68:5000`;
 
 const Login = ({navigation}) => {
   const [email, setEmail] = useState('');

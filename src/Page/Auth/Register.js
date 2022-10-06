@@ -12,7 +12,7 @@ import * as Animatable from 'react-native-animatable';
 import Button from '../../component/Button';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const api = `http://192.168.1.67:5000`;
+const api = `http://192.168.1.68:5000`;
 
 const Register = ({navigation}) => {
   const [name, setName] = useState('');
